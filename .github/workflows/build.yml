@@ -1,0 +1,14 @@
+name: Build vaydns-server
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+      - run: GOOS=linux GOARCH=amd64 go build -o vaydns-server-linux-amd64 ./vaydns-server
+      - run: GOOS=linux GOARCH=arm64 go build -o vayd
