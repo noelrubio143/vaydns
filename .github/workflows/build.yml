@@ -1,4 +1,6 @@
-name: Build vaydns-server
+
+name: Build libvaydns (armeabi-v7a)
+
 on:
   workflow_dispatch:
 
@@ -7,8 +9,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          repository: net2share/vaydns
+          ref: v0.2.8
+
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.23'
-      - run: GOOS=linux GOARCH=amd64 go build -o vaydns-server-linux-amd64 ./vaydns-server
-      - run: GOOS=linux GOARCH=arm64 go build -o vayd
+          go-version: '1.24'
+
+      - name: Build vaydns-client for 32-bit ARM (v7a)
+        run: |
+          CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=7 \
+            go build -trimpath -ldflags="-s -w" -o libvaydns.so ./vaydns-client
+          file libvaydns.so || true
+          ls -la libvaydns.so
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: libvaydns-armeabi-v7a
+          path: libvaydns.so
